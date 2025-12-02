@@ -1,13 +1,13 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.gerente;
 
-import com.senai.novo_conta_bancaria.domain.entity.Cliente;
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
+import com.senai.novo_conta_bancaria.domain.entity.Gerente;
+import com.senai.novo_conta_bancaria.domain.enums.Role;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
-import java.util.List;
-
-public record ClienteResponseDto(
-        String id,
-
+@Builder
+public record GerenteRegistroDto(
         @NotNull(message = "O nome não pode ser nulo.")
         @NotBlank(message = "O nome não pode ser vazio.")
         @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
@@ -28,21 +28,16 @@ public record ClienteResponseDto(
         @Size(min = 8, max = 100, message = "A senha deve ter entre 8 e 100 caracteres.")
         String senha,
 
-        List<ContaResumoDto> contas
+        ContaResumoDto conta
 ) {
-    public static ClienteResponseDto fromEntity(Cliente cliente) {
-        List<ContaResumoDto> contas = cliente
-                .getContas()
-                .stream()
-                .map(ContaResumoDto::fromEntity)
-                .toList();
-        return new ClienteResponseDto(
-                cliente.getId(),
-                cliente.getNome(),
-                cliente.getCpf(),
-                cliente.getEmail(),
-                cliente.getSenha(),
-                contas
-        );
+    public Gerente toEntity() {
+        return Gerente.builder()
+                .ativo(true)
+                .nome(nome)
+                .cpf(cpf)
+                .email(email)
+                .senha(senha)
+                .role(Role.GERENTE)
+                .build();
     }
 }

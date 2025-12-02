@@ -1,8 +1,12 @@
 package com.senai.novo_conta_bancaria.interface_ui.controller;
 
-import com.senai.novo_conta_bancaria.application.dto.*;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
+import com.senai.novo_conta_bancaria.application.dto.conta.TransferenciaDto;
+import com.senai.novo_conta_bancaria.application.dto.conta.ValorSaqueDepositoDto;
 import com.senai.novo_conta_bancaria.application.service.ContaService;
-import com.senai.novo_conta_bancaria.application.service.PagamentoAppService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -126,11 +130,11 @@ public class ContaController {
                                     mediaType = "application/json",
                                     examples = {
                                             @ExampleObject(
-                                                    name = "Preço inválido",
-                                                    value = "\"Preço mínimo do serviço deve ser R$ 50,00\""),
+                                                    name = "Saldo inválido",
+                                                    value = "\"O saldo não pode ser nulo.\""),
                                             @ExampleObject(
-                                                    name = "Duração excedida",
-                                                    value = "\"Duração do serviço não pode exceder 30 dias\"")
+                                                    name = "Limite inválido",
+                                                    value = "\"O limite não pode ser nulo.\"")
                                     }
                             )
                     ),
@@ -180,6 +184,37 @@ public class ContaController {
 
     // Ações específicas
 
+    @Operation(
+            summary = "Sacar um valor da conta",
+            description = "Retira um valor da conta para trocar por dinheiro físico.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = ValorSaqueDepositoDto.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                          "valor": 100
+                                        }
+                                    """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Saque realizado com sucesso."),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Erro de validação.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "Valor inválido",
+                                                    value = "\"O valor não pode ser nulo.\"")
+                                    }
+                            )
+                    )
+            }
+    )
     @PostMapping("/{numero}/sacar")
     public ResponseEntity<ContaResumoDto> sacar(@PathVariable Long numero,
                                                 @Valid @RequestBody ValorSaqueDepositoDto dto) {
@@ -187,6 +222,37 @@ public class ContaController {
                 .ok(service.sacar(numero, dto));
     }
 
+    @Operation(
+            summary = "Depositar um valor da conta",
+            description = "Acrescenta um valor à conta trocado por dinheiro físico.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = ValorSaqueDepositoDto.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                          "valor": 100
+                                        }
+                                    """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Depósito realizado com sucesso."),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Erro de validação.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "Valor inválido",
+                                                    value = "\"O valor não pode ser nulo.\"")
+                                    }
+                            )
+                    )
+            }
+    )
     @PostMapping("/{numero}/depositar")
     public ResponseEntity<ContaResumoDto> depositar(@PathVariable Long numero,
                                                     @Valid @RequestBody ValorSaqueDepositoDto dto) {
@@ -194,6 +260,41 @@ public class ContaController {
                 .ok(service.depositar(numero, dto));
     }
 
+    @Operation(
+            summary = "Transferir valor a uma conta",
+            description = "Retira uma quantia da conta corrente para transferí-la a outra conta",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = TransferenciaDto.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                            "numeroDestino": 102030,
+                                            "valor": 100
+                                        }
+                                    """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Transferência realizada com sucesso."),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Erro de validação.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "Número da conta destinatária inválido",
+                                                    value = "\"O número da conta destinatária não pode ser negativo.\"")
+                                            @ExampleObject(
+                                                    name = "Valor inválido",
+                                                    value = "\"O valor não pode ser nulo.\"")
+                                    }
+                            )
+                    )
+            }
+    )
     @PostMapping("/{numero}/transferir")
     public ResponseEntity<ContaResumoDto> transferir(@PathVariable Long numero,
                                                      @Valid @RequestBody TransferenciaDto dto) {

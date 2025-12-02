@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -36,7 +37,7 @@ public class Taxa {
     private BigDecimal valorFixo;
 
     @ManyToMany(mappedBy = "taxas", fetch = FetchType.LAZY)
-    private HashSet<Pagamento> pagamentos;
+    private Set<Pagamento> pagamentos;
 
     @Column(nullable = false)
     public FormaPagamento formaPagamento;

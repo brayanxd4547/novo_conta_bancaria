@@ -1,8 +1,8 @@
 package com.senai.novo_conta_bancaria.interface_ui.controller;
 
-import com.senai.novo_conta_bancaria.application.dto.TaxaAtualizacaoDto;
-import com.senai.novo_conta_bancaria.application.dto.TaxaRegistroDto;
-import com.senai.novo_conta_bancaria.application.dto.TaxaResponseDto;
+import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaResponseDto;
 import com.senai.novo_conta_bancaria.application.service.TaxaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,8 +29,7 @@ public class TaxaController {
     // Create
     @Operation(
             summary = "Cadastrar uma nova taxa",
-            description = "Adiciona uma nova taxa à base de dados após validações de nome, ID, endereço de e-mail " +
-                    "e senha e criação de uma conta bancária.",
+            description = "Adiciona uma nova taxa à base de dados após validações.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
@@ -39,7 +38,8 @@ public class TaxaController {
                                         {
                                           "descricao": "Tarifa Bancária",
                                           "percentual": 0,
-                                          "valorFixo": 10
+                                          "valorFixo": 10,
+                                          "formaPagamento": "BOLETO"
                                         }
                                     """
                             )
@@ -129,8 +129,10 @@ public class TaxaController {
                             schema = @Schema(implementation = TaxaAtualizacaoDto.class),
                             examples = @ExampleObject(name = "Exemplo de atualização", value = """
                                         {
-                                            "percentual": 7,
-                                            "valorFixo": 0
+                                          "descricao": "Tarifa Bancária",
+                                          "percentual": 0,
+                                          "valorFixo": 10,
+                                          "formaPagamento": "BOLETO"
                                         }
                                     """)
                     )
@@ -166,7 +168,7 @@ public class TaxaController {
     )
     @PutMapping("/{id}")
     public ResponseEntity<TaxaResponseDto> atualizarTaxa(@PathVariable String id,
-                                                               @Valid @RequestBody TaxaAtualizacaoDto dto) {
+                                                         @Valid @RequestBody TaxaAtualizacaoDto dto) {
         return ResponseEntity
                 .ok(service.atualizarTaxa(id, dto));
     }

@@ -8,6 +8,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -27,7 +28,7 @@ public class Pagamento {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conta_id", nullable = false, foreignKey = @ForeignKey(name = "fk_pagamento_conta"))
-    private Cliente conta;
+    private Conta conta;
 
     @Column(nullable = false, length = 120)
     private String servico;
@@ -47,7 +48,7 @@ public class Pagamento {
             name = "pagamento_taxas",
             joinColumns = @JoinColumn(name = "pagamento_id"),
             inverseJoinColumns = @JoinColumn(name = "taxa_id"))
-    private HashSet<Taxa> taxas;
+    private Set<Taxa> taxas;
 
     @Column(nullable = false)
     public FormaPagamento formaPagamento;

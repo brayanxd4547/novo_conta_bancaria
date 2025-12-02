@@ -1,8 +1,8 @@
 package com.senai.novo_conta_bancaria.interface_ui.controller;
 
-import com.senai.novo_conta_bancaria.application.dto.ClienteAtualizacaoDto;
-import com.senai.novo_conta_bancaria.application.dto.ClienteRegistroDto;
-import com.senai.novo_conta_bancaria.application.dto.ClienteResponseDto;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteResponseDto;
 import com.senai.novo_conta_bancaria.application.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,8 +29,7 @@ public class ClienteController {
     // Create
     @Operation(
             summary = "Cadastrar um novo cliente",
-            description = "Adiciona um novo cliente à base de dados após validações de nome, CPF, endereço de e-mail " +
-                    "e senha e criação de uma conta bancária.",
+            description = "Adiciona um novo cliente à base de dados após validações.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
@@ -56,10 +55,10 @@ public class ClienteController {
                                     examples = {
                                             @ExampleObject(
                                                     name = "Nome inválido",
-                                                    value = "\"Preço mínimo do serviço deve ser R$ 50,00\""),
+                                                    value = "\"O nome deve ter entre 3 e 100 caracteres.\""),
                                             @ExampleObject(
                                                     name = "CPF inválido",
-                                                    value = "\"Duração do serviço não pode exceder 30 dias\"")
+                                                    value = "\"O CPF deve ter até 11 digitos.\"")
                                     }
                             )
                     )
@@ -141,11 +140,11 @@ public class ClienteController {
                                     mediaType = "application/json",
                                     examples = {
                                             @ExampleObject(
-                                                    name = "Preço inválido",
-                                                    value = "\"Preço mínimo do serviço deve ser R$ 50,00\""),
+                                                    name = "Nome inválido",
+                                                    value = "\"O nome deve ter entre 3 e 100 caracteres.\""),
                                             @ExampleObject(
-                                                    name = "Duração excedida",
-                                                    value = "\"Duração do serviço não pode exceder 30 dias\"")
+                                                    name = "CPF inválido",
+                                                    value = "\"O CPF deve ter até 11 digitos.\"")
                                     }
                             )
                     ),

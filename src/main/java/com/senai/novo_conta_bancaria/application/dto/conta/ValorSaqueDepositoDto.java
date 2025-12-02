@@ -1,4 +1,4 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.conta;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

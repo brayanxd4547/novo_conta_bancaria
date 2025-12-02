@@ -1,8 +1,11 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.gerente;
 
+import com.senai.novo_conta_bancaria.domain.entity.Gerente;
 import jakarta.validation.constraints.*;
 
-public record ClienteAtualizacaoDto(
+public record GerenteResponseDto(
+        String id,
+
         @NotNull(message = "O nome não pode ser nulo.")
         @NotBlank(message = "O nome não pode ser vazio.")
         @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
@@ -23,4 +26,13 @@ public record ClienteAtualizacaoDto(
         @Size(min = 8, max = 100, message = "A senha deve ter entre 8 e 100 caracteres.")
         String senha
 ) {
+    public static GerenteResponseDto fromEntity(Gerente gerente) {
+        return new GerenteResponseDto(
+                gerente.getId(),
+                gerente.getNome(),
+                gerente.getCpf(),
+                gerente.getEmail(),
+                gerente.getSenha()
+        );
+    }
 }

@@ -1,8 +1,8 @@
 package com.senai.novo_conta_bancaria.application.service;
 
-import com.senai.novo_conta_bancaria.application.dto.GerenteAtualizacaoDto;
-import com.senai.novo_conta_bancaria.application.dto.GerenteRegistroDto;
-import com.senai.novo_conta_bancaria.application.dto.GerenteResponseDto;
+import com.senai.novo_conta_bancaria.application.dto.gerente.GerenteAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.gerente.GerenteRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.gerente.GerenteResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Gerente;
 import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.novo_conta_bancaria.domain.repository.GerenteRepository;

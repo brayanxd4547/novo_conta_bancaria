@@ -1,15 +1,16 @@
 package com.senai.novo_conta_bancaria.application.service;
 
-import com.senai.novo_conta_bancaria.application.dto.*;
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
+import com.senai.novo_conta_bancaria.application.dto.conta.TransferenciaDto;
+import com.senai.novo_conta_bancaria.application.dto.conta.ValorSaqueDepositoDto;
 import com.senai.novo_conta_bancaria.domain.entity.Conta;
 import com.senai.novo_conta_bancaria.domain.entity.ContaCorrente;
 import com.senai.novo_conta_bancaria.domain.entity.ContaPoupanca;
-import com.senai.novo_conta_bancaria.domain.entity.Taxa;
 import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.novo_conta_bancaria.domain.exception.RendimentoInvalidoException;
 import com.senai.novo_conta_bancaria.domain.exception.TipoDeContaInvalidaException;
 import com.senai.novo_conta_bancaria.domain.repository.ContaRepository;
-import com.senai.novo_conta_bancaria.domain.repository.TaxaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;

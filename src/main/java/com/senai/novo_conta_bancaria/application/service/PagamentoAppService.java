@@ -1,38 +1,48 @@
 package com.senai.novo_conta_bancaria.application.service;
 
-import com.senai.novo_conta_bancaria.application.dto.ContaResumoDto;
-import com.senai.novo_conta_bancaria.application.dto.PagamentoRegistroDto;
-import com.senai.novo_conta_bancaria.application.dto.PagamentoResponseDto;
+import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Conta;
 import com.senai.novo_conta_bancaria.domain.entity.Pagamento;
-import com.senai.novo_conta_bancaria.domain.repository.ContaRepository;
+import com.senai.novo_conta_bancaria.domain.entity.Taxa;
+import com.senai.novo_conta_bancaria.domain.enums.FormaPagamento;
+import com.senai.novo_conta_bancaria.domain.exception.FormaDePagamentoInvalidaException;
+import com.senai.novo_conta_bancaria.domain.exception.SaldoInsuficienteException;
 import com.senai.novo_conta_bancaria.domain.repository.PagamentoRepository;
+import com.senai.novo_conta_bancaria.domain.repository.TaxaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class PagamentoAppService {
     private final PagamentoRepository pagamentoRepository;
-    private final ContaRepository contaRepository;
+
+    private final TaxaService taxaService;
     private final ContaService contaService;
     private final PagamentoDomainService pagamentoDomainService;
 
     @PreAuthorize("hasRole('CLIENTE')")
-    public ContaResumoDto pagar(Long numero, PagamentoRegistroDto dto) {
+    public PagamentoResponseDto pagar(Long numero, PagamentoRegistroDto dto) {
+        FormaPagamento formaPagamento = pagamentoDomainService.validarFormaPagamento(dto.formaPagamento());
+
+        Set<Taxa> taxas = taxaService.procurarTaxasPorFormaPagamento(formaPagamento);
         Conta conta = contaService.procurarContaAtiva(numero);
 
-        BigDecimal valorDasTaxas = pagamentoDomainService.calcularTaxas(dto.formaPagamento(), dto.valorServico());
-        conta.setSaldo(conta.getSaldo().subtract(dto.valorServico().add(valorDasTaxas)));
+        Pagamento pagamento = dto.toEntity(conta, taxas);
 
-        return ContaResumoDto.fromEntity(contaRepository.save(conta));
+        BigDecimal valorTaxa = pagamentoDomainService.calcularTaxa(dto.valorPago(), taxas);
+        BigDecimal valorTotal = pagamentoDomainService.validarSaldo(numero, dto.valorPago(), valorTaxa);
 
-        Pagamento pagamento = PagamentoRegistroDto.toEntity();
-        return PagamentoResponseDto.fromEntity(pagamentoRepository.save(pagamento));
+        conta.setSaldo(conta.getSaldo().subtract(valorTotal));
+        return PagamentoResponseDto.fromEntity(pagamentoRepository.save(pagamento), valorTaxa);
     }
 }

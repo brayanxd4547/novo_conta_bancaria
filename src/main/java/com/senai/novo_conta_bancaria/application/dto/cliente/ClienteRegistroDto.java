@@ -1,12 +1,15 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.cliente;
 
-import com.senai.novo_conta_bancaria.domain.entity.Gerente;
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
+import com.senai.novo_conta_bancaria.domain.entity.Cliente;
 import com.senai.novo_conta_bancaria.domain.enums.Role;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
+import java.util.ArrayList;
+
 @Builder
-public record GerenteRegistroDto(
+public record ClienteRegistroDto(
         @NotNull(message = "O nome não pode ser nulo.")
         @NotBlank(message = "O nome não pode ser vazio.")
         @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
@@ -29,14 +32,16 @@ public record GerenteRegistroDto(
 
         ContaResumoDto conta
 ) {
-    public Gerente toEntity() {
-        return Gerente.builder()
+    public Cliente toEntity() {
+
+        return Cliente.builder()
                 .ativo(true)
                 .nome(nome)
                 .cpf(cpf)
                 .email(email)
                 .senha(senha)
-                .role(Role.GERENTE)
+                .contas(new ArrayList<>())
+                .role(Role.CLIENTE)
                 .build();
     }
 }

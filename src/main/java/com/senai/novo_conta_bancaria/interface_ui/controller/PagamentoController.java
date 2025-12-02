@@ -1,7 +1,7 @@
 package com.senai.novo_conta_bancaria.interface_ui.controller;
 
-import com.senai.novo_conta_bancaria.application.dto.ContaResumoDto;
-import com.senai.novo_conta_bancaria.application.dto.PagamentoRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoResponseDto;
 import com.senai.novo_conta_bancaria.application.service.PagamentoAppService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,8 +30,11 @@ public class PagamentoController {
                             schema = @Schema(implementation = PagamentoRegistroDto.class),
                             examples = @ExampleObject(name = "Exemplo válido", value = """
                                         {
+                                            "servico": "SENAI",
+                                            "valorPago": 100,
+                                            "formaPagamento": "BOLETO"
                                         }
-                                    """ // TODO
+                                    """
                             )
                     )
             ),
@@ -43,20 +46,20 @@ public class PagamentoController {
                             content = @Content(
                                     mediaType = "application/json",
                                     examples = {
-                                            @ExampleObject( // TODO
-                                                    name = "Nome inválido",
-                                                    value = "\"Preço mínimo do serviço deve ser R$ 50,00\""),
                                             @ExampleObject(
-                                                    name = "CPF inválido",
-                                                    value = "\"Duração do serviço não pode exceder 30 dias\"")
+                                                    name = "Nome do serviço inválido",
+                                                    value = "\"O nome do serviço precisa ter entre 3 e 100 caracteres.\""),
+                                            @ExampleObject(
+                                                    name = "Forma de pagamento inválida",
+                                                    value = "\"A forma de pagamento não foi encontrada.\"")
                                     }
                             )
                     )
             }
     )
     @PostMapping("/{numeroConta}")
-    public ResponseEntity<ContaResumoDto> pagar(@PathVariable Long numero, @Valid @RequestBody PagamentoRegistroDto dto) {
+    public ResponseEntity<PagamentoResponseDto> pagar(@PathVariable Long numeroConta, @Valid @RequestBody PagamentoRegistroDto dto) {
         return ResponseEntity
-                .ok(pagamentoAppService.pagar(numero, dto));
+                .ok(pagamentoAppService.pagar(numeroConta, dto));
     }
 }

@@ -1,20 +1,19 @@
 package com.senai.novo_conta_bancaria.application.service;
 
-import com.senai.novo_conta_bancaria.application.dto.TaxaAtualizacaoDto;
-import com.senai.novo_conta_bancaria.application.dto.TaxaRegistroDto;
-import com.senai.novo_conta_bancaria.application.dto.TaxaResponseDto;
+import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Taxa;
-import com.senai.novo_conta_bancaria.domain.entity.Conta;
-import com.senai.novo_conta_bancaria.domain.exception.ContaDeMesmoTipoException;
+import com.senai.novo_conta_bancaria.domain.enums.FormaPagamento;
 import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.novo_conta_bancaria.domain.repository.TaxaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -47,16 +46,18 @@ public class TaxaService {
 
     @Transactional(readOnly = true)
     public TaxaResponseDto buscarTaxa(String id) {
-        return TaxaResponseDto.fromEntity(procurarTaxaAtivo(id));
+        return TaxaResponseDto.fromEntity(procurarTaxaAtiva(id));
     }
 
     // UPDATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public TaxaResponseDto atualizarTaxa(String id, TaxaAtualizacaoDto dto) {
-        Taxa taxa = procurarTaxaAtivo(id);
+        Taxa taxa = procurarTaxaAtiva(id);
 
+        taxa.setDescricao(dto.descricao());
         taxa.setPercentual(dto.percentual());
         taxa.setValorFixo(dto.valorFixo());
+        taxa.setDescricao(dto.formaPagamento());
 
         return TaxaResponseDto.fromEntity(repository.save(taxa));
     }
@@ -64,17 +65,22 @@ public class TaxaService {
     // DELETE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public void apagarTaxa(String id) {
-        Taxa taxa = procurarTaxaAtivo(id);
+        Taxa taxa = procurarTaxaAtiva(id);
 
         taxa.setAtivo(false);
 
         repository.save(taxa);
     }
 
-    // Mét0do auxiliar para as requisições
-    private Taxa procurarTaxaAtivo(String id) {
+    // Mét0dos auxiliares para as requisições
+    protected Taxa procurarTaxaAtiva(String id) {
         return repository
                 .findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("taxa"));
+    }
+
+    protected Set<Taxa> procurarTaxasPorFormaPagamento(FormaPagamento formaPagamento) {
+        return repository
+                .findAllByFormaPagamentoAndAtivoTrue(formaPagamento);
     }
 }

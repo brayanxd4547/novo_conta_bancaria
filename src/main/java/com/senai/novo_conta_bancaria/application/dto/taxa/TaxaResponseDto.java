@@ -1,4 +1,4 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.taxa;
 
 import com.senai.novo_conta_bancaria.domain.entity.Taxa;
 import jakarta.validation.constraints.*;
@@ -19,14 +19,20 @@ public record TaxaResponseDto(
 
         @NotNull(message = "O valor fixo não pode ser nulo.")
         @PositiveOrZero(message = "O valor fixo não pode ser negativo.")
-        BigDecimal valorFixo
+        BigDecimal valorFixo,
+
+        @NotNull(message = "A forma de pagamento taxada não pode ser nula.")
+        @NotBlank(message = "A forma de pagamento taxada não pode ser vazia.")
+        @Size(min = 3, max = 100, message = "A forma de pagamento taxada deve ter entre 3 e 100 caracteres.")
+        String formaPagamento
 ) {
     public static TaxaResponseDto fromEntity(Taxa taxa) {
         return new TaxaResponseDto(
                 taxa.getId(),
                 taxa.getDescricao(),
                 taxa.getPercentual(),
-                taxa.getValorFixo()
+                taxa.getValorFixo(),
+                taxa.getFormaPagamento().name()
         );
     }
 }

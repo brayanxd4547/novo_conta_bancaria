@@ -1,7 +1,6 @@
 package com.senai.novo_conta_bancaria.interface_ui.controller;
 
 import com.senai.novo_conta_bancaria.application.dto.AuthDto;
-import com.senai.novo_conta_bancaria.application.dto.ClienteRegistroDto;
 import com.senai.novo_conta_bancaria.application.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

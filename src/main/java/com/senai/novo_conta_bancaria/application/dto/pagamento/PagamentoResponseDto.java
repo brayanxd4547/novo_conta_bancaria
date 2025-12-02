@@ -1,5 +1,6 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.pagamento;
 
+import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Pagamento;
 
 import java.math.BigDecimal;
@@ -9,13 +10,15 @@ import java.util.List;
 public record PagamentoResponseDto(
         String id,
         String servico,
-        BigDecimal valorPago,
+        BigDecimal valorServico,
+        BigDecimal valorTaxa,
+        BigDecimal valorTotal,
         LocalDateTime dataPagamento,
         String status,
         List<TaxaResponseDto> taxas,
         String formaPagamento
 ) {
-        public static PagamentoResponseDto fromEntity(Pagamento pagamento) {
+        public static PagamentoResponseDto fromEntity(Pagamento pagamento, BigDecimal valorTaxa) {
                 List<TaxaResponseDto> taxas = pagamento
                         .getTaxas()
                         .stream()
@@ -25,6 +28,8 @@ public record PagamentoResponseDto(
                         pagamento.getId(),
                         pagamento.getServico(),
                         pagamento.getValorPago(),
+                        valorTaxa,
+                        pagamento.getValorPago().add(valorTaxa),
                         pagamento.getDataPagamento(),
                         pagamento.getStatus().name(),
                         taxas,

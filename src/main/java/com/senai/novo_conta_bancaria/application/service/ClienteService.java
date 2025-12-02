@@ -1,8 +1,8 @@
 package com.senai.novo_conta_bancaria.application.service;
 
-import com.senai.novo_conta_bancaria.application.dto.ClienteAtualizacaoDto;
-import com.senai.novo_conta_bancaria.application.dto.ClienteRegistroDto;
-import com.senai.novo_conta_bancaria.application.dto.ClienteResponseDto;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteAtualizacaoDto;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteRegistroDto;
+import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
 import com.senai.novo_conta_bancaria.domain.entity.Conta;
 import com.senai.novo_conta_bancaria.domain.exception.ContaDeMesmoTipoException;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,10 @@ public class ClienteService {
     // CREATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ClienteResponseDto registrarCliente(ClienteRegistroDto dto) {
+        Optional<Cliente> buscaPorEmail = repository. // todo
         Cliente clienteRegistrado = repository // verifica se o cliente já existe
                 .findByCpfAndAtivoTrue(dto.cpf())
+                .orElseF
                 .orElseGet( // se não existir, cria um novo
                         () -> repository.save(dto.toEntity())
                 );

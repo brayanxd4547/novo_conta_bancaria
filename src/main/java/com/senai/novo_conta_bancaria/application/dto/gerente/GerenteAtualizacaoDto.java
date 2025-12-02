@@ -1,4 +1,4 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.gerente;
 
 import jakarta.validation.constraints.*;
 

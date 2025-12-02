@@ -1,9 +1,12 @@
-package com.senai.novo_conta_bancaria.application.dto;
+package com.senai.novo_conta_bancaria.application.dto.cliente;
 
-import com.senai.novo_conta_bancaria.domain.entity.Gerente;
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
+import com.senai.novo_conta_bancaria.domain.entity.Cliente;
 import jakarta.validation.constraints.*;
 
-public record GerenteResponseDto(
+import java.util.List;
+
+public record ClienteResponseDto(
         String id,
 
         @NotNull(message = "O nome não pode ser nulo.")
@@ -24,15 +27,23 @@ public record GerenteResponseDto(
         @NotNull(message = "A senha não pode ser nula.")
         @NotBlank(message = "A senha não pode ser vazia.")
         @Size(min = 8, max = 100, message = "A senha deve ter entre 8 e 100 caracteres.")
-        String senha
+        String senha,
+
+        List<ContaResumoDto> contas
 ) {
-    public static GerenteResponseDto fromEntity(Gerente gerente) {
-        return new GerenteResponseDto(
-                gerente.getId(),
-                gerente.getNome(),
-                gerente.getCpf(),
-                gerente.getEmail(),
-                gerente.getSenha()
+    public static ClienteResponseDto fromEntity(Cliente cliente) {
+        List<ContaResumoDto> contas = cliente
+                .getContas()
+                .stream()
+                .map(ContaResumoDto::fromEntity)
+                .toList();
+        return new ClienteResponseDto(
+                cliente.getId(),
+                cliente.getNome(),
+                cliente.getCpf(),
+                cliente.getEmail(),
+                cliente.getSenha(),
+                contas
         );
     }
 }
