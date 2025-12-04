@@ -8,11 +8,6 @@ public record ClienteAtualizacaoDto(
         @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
         String nome,
 
-        @NotNull(message = "O CPF não pode ser nulo.")
-        @Positive(message = "O CPF não pode ser negativo.")
-        @Max(value = 99999999999L, message = "O CPF deve ter até 11 digitos.")
-        Long cpf,
-
         @Email
         @NotNull(message = "O e-mail não pode ser nulo.")
         @NotBlank(message = "O e-mail não pode ser vazio.")

@@ -15,4 +15,11 @@ import java.util.List;
 public class Cliente extends Usuario {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Conta> contas;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dispositivoIoT_id", referencedColumnName = "id")
+    private DispositivoIoT dispositivoIoT;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<CodigoAutenticacao> codigosAutenticacao;
 }
