@@ -90,12 +90,32 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(EmailJaCadastradoException.class)
+    public ProblemDetail handleEmailJaCadastrado(EmailJaCadastradoException ex, HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Esse endereço de e-mail já foi cadastrado.",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+
     @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ProblemDetail handleEntidadeNaoEncontrada(EntidadeNaoEncontradaException ex,
-                                                     HttpServletRequest request) {
+    public ProblemDetail handleEntidadeNaoEncontrada(EntidadeNaoEncontradaException ex, HttpServletRequest request) {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.NOT_FOUND,
                 "Entidade não encontrada.",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(FormaDePagamentoInvalidaException.class)
+    public ProblemDetail handleFormaDePagamentoInvalida(FormaDePagamentoInvalidaException ex, HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Forma de pagamento inválida.",
                 ex.getMessage(),
                 request.getRequestURI()
         );
@@ -137,6 +157,16 @@ public class GlobalExceptionHandler {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.CONFLICT,
                 "Transferência para mesma conta não é permitida.",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    public ProblemDetail handleUsuarioNaoEncontrado(UsuarioNaoEncontradoException ex, HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "Usuário não encontrado.",
                 ex.getMessage(),
                 request.getRequestURI()
         );

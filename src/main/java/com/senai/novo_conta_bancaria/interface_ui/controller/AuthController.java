@@ -51,7 +51,7 @@ public class AuthController {
                                                     value = "\"O texto inserido não corresponde a um endereço de e-mail.\""),
                                             @ExampleObject(
                                                     name = "Senha inválida",
-                                                    value = "\"SLAAAA\"")
+                                                    value = "\"A senha deve ter entre 3 e 100 caracteres.\"")
                                     }
                             )
                     )

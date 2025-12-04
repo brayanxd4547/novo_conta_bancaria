@@ -1,7 +1,6 @@
 package com.senai.novo_conta_bancaria.interface_ui.controller;
 
 import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteAtualizacaoDto;
-import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteRegistroDto;
 import com.senai.novo_conta_bancaria.application.dto.conta.ContaAtualizacaoDto;
 import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
 import com.senai.novo_conta_bancaria.application.dto.conta.TransferenciaDto;
@@ -286,7 +285,7 @@ public class ContaController {
                                     examples = {
                                             @ExampleObject(
                                                     name = "Número da conta destinatária inválido",
-                                                    value = "\"O número da conta destinatária não pode ser negativo.\"")
+                                                    value = "\"O número da conta não pode ser negativo.\""),
                                             @ExampleObject(
                                                     name = "Valor inválido",
                                                     value = "\"O valor não pode ser nulo.\"")

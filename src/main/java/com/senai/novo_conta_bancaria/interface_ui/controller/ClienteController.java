@@ -29,17 +29,22 @@ public class ClienteController {
     // Create
     @Operation(
             summary = "Cadastrar um novo cliente",
-            description = "Adiciona um novo cliente à base de dados após validações.",
+            description = "Adiciona um novo cliente à base de dados junto a uma conta.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
                             schema = @Schema(implementation = ClienteRegistroDto.class),
                             examples = @ExampleObject(name = "Exemplo válido", value = """
                                         {
-                                          "nome": "José Silva dos Santos",
-                                          "cpf": 12345678910,
-                                          "email": "jose@email.com",
-                                          "senha": "JoseDosSantos1234"
+                                            "nome": "José Silva dos Santos",
+                                            "cpf": 12345678910,
+                                            "email": "jose@email.com",
+                                            "senha": "JoseDosSantos1234",
+                                            "conta": {
+                                                "numero": 102030,
+                                                "tipo": "CORRENTE",
+                                                "saldo": 1000
+                                            }
                                         }
                                     """
                             )

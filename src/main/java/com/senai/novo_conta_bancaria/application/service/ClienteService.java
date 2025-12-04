@@ -6,6 +6,7 @@ import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
 import com.senai.novo_conta_bancaria.domain.entity.Conta;
 import com.senai.novo_conta_bancaria.domain.exception.ContaDeMesmoTipoException;
+import com.senai.novo_conta_bancaria.domain.exception.EmailJaCadastradoException;
 import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.novo_conta_bancaria.domain.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,17 +28,22 @@ public class ClienteService {
     // CREATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ClienteResponseDto registrarCliente(ClienteRegistroDto dto) {
-        Optional<Cliente> buscaPorEmail = repository. // todo
-        Cliente clienteRegistrado = repository // verifica se o cliente já existe
-                .findByCpfAndAtivoTrue(dto.cpf())
-                .orElseF
-                .orElseGet( // se não existir, cria um novo
+        // Impede que mais de um cliente com mesmo email exista
+        if (repository.existsByEmailAndAtivoTrue(dto.email())) {
+            String mensagem = "Endereço de e-mail \"" + dto.email() + "\" já foi cadastrado.";
+            throw new EmailJaCadastradoException(mensagem);
+        }
+
+        Cliente clienteRegistrado = repository
+                .findByCpfAndAtivoTrue(dto.cpf()) // verifica se o cpf já está cadastrado
+                .orElseGet( // se não estiver, cria um novo cliente
                         () -> repository.save(dto.toEntity())
                 );
         List<Conta> contas = clienteRegistrado.getContas();
         Conta novaConta = dto.conta().toEntity(clienteRegistrado);
 
-        boolean temMesmoTipo = contas // verifica se o cliente já tem uma conta do mesmo tipo
+        // Verifica se o cliente já tem uma conta do mesmo tipo
+        boolean temMesmoTipo = contas
                 .stream()
                 .anyMatch(c -> c.getTipo().equals(novaConta.getTipo()) && c.isAtivo());
         if (temMesmoTipo)

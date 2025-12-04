@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, String> {
     Optional<Cliente> findByCpfAndAtivoTrue(Long cpf);
+    boolean existsByEmailAndAtivoTrue(String email);
 
     List<Cliente> findAllByAtivoTrue();
 }
