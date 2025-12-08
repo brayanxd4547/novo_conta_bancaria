@@ -5,6 +5,7 @@ import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteRegistroDto;
 import com.senai.novo_conta_bancaria.application.dto.cliente.ClienteResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
 import com.senai.novo_conta_bancaria.domain.entity.Conta;
+import com.senai.novo_conta_bancaria.domain.entity.DispositivoIoT;
 import com.senai.novo_conta_bancaria.domain.exception.ContaDeMesmoTipoException;
 import com.senai.novo_conta_bancaria.domain.exception.EmailJaCadastradoException;
 import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +39,11 @@ public class ClienteService {
                 .orElseGet( // se não estiver, cria um novo cliente
                         () -> repository.save(dto.toEntity())
                 );
-        List<Conta> contas = clienteRegistrado.getContas();
         Conta novaConta = dto.conta().toEntity(clienteRegistrado);
+        DispositivoIoT dispositivoIoT = dto.dispositivoIoT().toEntity(clienteRegistrado);
 
         // Verifica se o cliente já tem uma conta do mesmo tipo
+        List<Conta> contas = clienteRegistrado.getContas();
         boolean temMesmoTipo = contas
                 .stream()
                 .anyMatch(c -> c.getTipo().equals(novaConta.getTipo()) && c.isAtivo());
@@ -50,7 +51,9 @@ public class ClienteService {
             throw new ContaDeMesmoTipoException(novaConta.getTipo());
 
         clienteRegistrado.getContas().add(novaConta);
+        clienteRegistrado.setDispositivoIoT(dispositivoIoT);
         clienteRegistrado.setSenha(passwordEncoder.encode(dto.senha()));
+
         return ClienteResponseDto.fromEntity(repository.save(clienteRegistrado));
     }
 
@@ -89,12 +92,13 @@ public class ClienteService {
         cliente.setAtivo(false);
         cliente.getContas()
                 .forEach(c -> c.setAtivo(false));
+        cliente.getDispositivoIoT().setAtivo(false);
 
         repository.save(cliente);
     }
 
     // Mét0do auxiliar para as requisições
-    private Cliente procurarClienteAtivo(Long cpf) {
+    protected Cliente procurarClienteAtivo(Long cpf) {
         return repository
                 .findByCpfAndAtivoTrue(cpf)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("cliente"));

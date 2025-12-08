@@ -1,7 +1,9 @@
 package com.senai.novo_conta_bancaria.application.dto.cliente;
 
 import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
+import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTRegistroDTO;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
+import com.senai.novo_conta_bancaria.domain.entity.DispositivoIoT;
 import com.senai.novo_conta_bancaria.domain.enums.Role;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -30,10 +32,11 @@ public record ClienteRegistroDto(
         @Size(min = 8, max = 100, message = "A senha deve ter entre 8 e 100 caracteres.")
         String senha,
 
-        ContaResumoDto conta
+        ContaResumoDto conta,
+
+        DispositivoIoTRegistroDTO dispositivoIoT
 ) {
     public Cliente toEntity() {
-
         return Cliente.builder()
                 .ativo(true)
                 .nome(nome)
@@ -42,6 +45,7 @@ public record ClienteRegistroDto(
                 .senha(senha)
                 .contas(new ArrayList<>())
                 .role(Role.CLIENTE)
+                .dispositivoIoT(null)
                 .build();
     }
 }

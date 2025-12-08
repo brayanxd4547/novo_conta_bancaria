@@ -2,6 +2,7 @@ package com.senai.novo_conta_bancaria.application.dto.cliente;
 
 import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
+import com.senai.novo_conta_bancaria.domain.entity.DispositivoIoT;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
@@ -29,7 +30,9 @@ public record ClienteResponseDto(
         @Size(min = 8, max = 100, message = "A senha deve ter entre 8 e 100 caracteres.")
         String senha,
 
-        List<ContaResumoDto> contas
+        List<ContaResumoDto> contas,
+
+        DispositivoIoT dispositivoIoT
 ) {
     public static ClienteResponseDto fromEntity(Cliente cliente) {
         List<ContaResumoDto> contas = cliente
@@ -43,7 +46,8 @@ public record ClienteResponseDto(
                 cliente.getCpf(),
                 cliente.getEmail(),
                 cliente.getSenha(),
-                contas
+                contas,
+                cliente.getDispositivoIoT()
         );
     }
 }
