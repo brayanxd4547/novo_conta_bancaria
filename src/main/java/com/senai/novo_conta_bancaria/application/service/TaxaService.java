@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,9 +25,12 @@ public class TaxaService {
     // CREATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public TaxaResponseDto registrarTaxa(TaxaRegistroDto dto) {
-        Taxa taxaRegistrada = repository
-                .findByDescricaoAndAtivoTrue(dto.descricao())
-                .orElseGet(() -> repository.save(dto.toEntity())); // TODO: Aplicar lógica de reativação de cliente
+        Taxa taxaRegistrada = repository.findByDescricao(dto.descricao())
+                .map(t -> t.isAtivo() ?
+                        t :
+                        reativarTaxa(t, dto)
+                )
+                .orElseGet(dto::toEntity);
 
         return TaxaResponseDto.fromEntity(repository.save(taxaRegistrada));
     }
@@ -80,5 +84,16 @@ public class TaxaService {
     protected Set<Taxa> procurarTaxasPorFormaPagamento(FormaPagamento formaPagamento) {
         return repository
                 .findAllByFormaPagamentoAndAtivoTrue(formaPagamento);
+    }
+
+    private Taxa reativarTaxa(Taxa taxa, TaxaRegistroDto dto) {
+        taxa.setAtivo(true);
+        taxa.setDescricao(dto.descricao());
+        taxa.setPercentual(dto.percentual());
+        taxa.setValorFixo(dto.valorFixo());
+        taxa.setFormaPagamento(FormaPagamento.valueOf(dto.formaPagamento()));
+        taxa.setPagamentos(new HashSet<>());
+
+        return taxa;
     }
 }

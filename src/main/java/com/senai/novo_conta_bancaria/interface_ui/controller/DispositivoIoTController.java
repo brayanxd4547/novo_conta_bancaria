@@ -87,7 +87,7 @@ public class DispositivoIoTController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
-                            schema = @Schema(implementation = DispositivoIoTRegistroDTO.class), //TODO
+                            schema = @Schema(implementation = DispositivoIoTRegistroDTO.class),
                             examples = @ExampleObject(name = "Exemplo de atualização", value = """
                                     {
                                         "codigoSerial": "AAAABBBBCCCCDDDD",

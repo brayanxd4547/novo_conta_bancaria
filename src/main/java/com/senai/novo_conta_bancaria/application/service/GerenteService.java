@@ -4,6 +4,7 @@ import com.senai.novo_conta_bancaria.application.dto.gerente.GerenteAtualizacaoD
 import com.senai.novo_conta_bancaria.application.dto.gerente.GerenteRegistroDto;
 import com.senai.novo_conta_bancaria.application.dto.gerente.GerenteResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Gerente;
+import com.senai.novo_conta_bancaria.domain.exception.EmailJaCadastradoException;
 import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.novo_conta_bancaria.domain.repository.GerenteRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,21 @@ public class GerenteService {
     // CREATE
     @PreAuthorize("hasRole('ADMIN')")
     public GerenteResponseDto registrarGerente(GerenteRegistroDto dto) {
-        Gerente gerenteRegistrado = repository
-                .findByCpfAndAtivoTrue(dto.cpf())
-                .orElseGet(() -> repository.save(dto.toEntity())); // TODO: Aplicar lógica de reativação de cliente
+        if (repository.existsByEmailAndAtivoTrue(dto.email()))
+            throw new EmailJaCadastradoException("Endereço de e-mail \"" + dto.email() + "\" já foi cadastrado.");
 
-        gerenteRegistrado.setSenha(passwordEncoder.encode(dto.senha()));
+        Gerente gerenteRegistrado = repository.findByCpf(dto.cpf())
+                .map(g -> g.isAtivo() ?
+                        g :
+                        reativarGerente(g, dto)
+                )
+                .orElseGet(() -> {
+                            Gerente gerente = dto.toEntity();
+                            gerente.setSenha(passwordEncoder.encode(dto.senha()));
+                            return gerente;
+                        }
+                );
+
         return GerenteResponseDto.fromEntity(repository.save(gerenteRegistrado));
     }
 
@@ -77,5 +88,14 @@ public class GerenteService {
         return repository
                 .findByCpfAndAtivoTrue(cpf)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("gerente"));
+    }
+
+    private Gerente reativarGerente(Gerente gerente, GerenteRegistroDto dto) {
+        gerente.setAtivo(true);
+        gerente.setNome(dto.nome());
+        gerente.setEmail(dto.email());
+        gerente.setSenha(passwordEncoder.encode(dto.senha()));
+
+        return gerente;
     }
 }

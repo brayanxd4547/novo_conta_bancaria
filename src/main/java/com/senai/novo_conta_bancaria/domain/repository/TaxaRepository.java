@@ -11,7 +11,7 @@ import java.util.Set;
 @Repository
 public interface TaxaRepository extends JpaRepository<Taxa, String> {
     Optional<Taxa> findByIdAndAtivoTrue(String id);
-    Optional<Taxa> findByDescricaoAndAtivoTrue(String id);
+    Optional<Taxa> findByDescricao(String id);
 
     Set<Taxa> findAllByAtivoTrue();
     Set<Taxa> findAllByFormaPagamentoAndAtivoTrue(FormaPagamento formaPagamento);
