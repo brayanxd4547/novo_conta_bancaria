@@ -3,7 +3,6 @@ package com.senai.novo_conta_bancaria.application.dto.cliente;
 import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTRegistroDTO;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
-import com.senai.novo_conta_bancaria.domain.entity.DispositivoIoT;
 import com.senai.novo_conta_bancaria.domain.enums.Role;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -19,7 +18,7 @@ public record ClienteRegistroDto(
 
         @NotNull(message = "O CPF não pode ser nulo.")
         @Positive(message = "O CPF não pode ser negativo.")
-        @Max(value = 99999999999L, message = "O CPF deve ter até 11 digitos.")
+        @Max(value = 99999999999L, message = "O CPF deve ter até 11 dígitos.")
         Long cpf,
 
         @Email

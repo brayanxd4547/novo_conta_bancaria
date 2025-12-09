@@ -24,11 +24,9 @@ public class GerenteService {
     // CREATE
     @PreAuthorize("hasRole('ADMIN')")
     public GerenteResponseDto registrarGerente(GerenteRegistroDto dto) {
-        Gerente gerenteRegistrado = repository // verifica se o gerente já existe
+        Gerente gerenteRegistrado = repository
                 .findByCpfAndAtivoTrue(dto.cpf())
-                .orElseGet( // se não existir, cria um novo
-                        () -> repository.save(dto.toEntity())
-                );
+                .orElseGet(() -> repository.save(dto.toEntity())); // TODO: Aplicar lógica de reativação de cliente
 
         gerenteRegistrado.setSenha(passwordEncoder.encode(dto.senha()));
         return GerenteResponseDto.fromEntity(repository.save(gerenteRegistrado));

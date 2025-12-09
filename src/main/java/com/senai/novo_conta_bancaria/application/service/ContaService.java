@@ -131,4 +131,12 @@ public class ContaService {
                 .findByNumeroAndAtivoTrue(numero)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("conta"));
     }
+
+    protected Conta substituirConta(Conta contaAntiga, ContaResumoDto contaNova){
+        contaAntiga.setAtivo(true);
+        contaAntiga.setSaldo(contaNova.saldo());
+        contaAntiga.setNumero(contaNova.numero());
+
+        return contaAntiga;
+    }
 }

@@ -24,11 +24,9 @@ public class TaxaService {
     // CREATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public TaxaResponseDto registrarTaxa(TaxaRegistroDto dto) {
-        Taxa taxaRegistrada = repository // verifica se a taxa já existe
+        Taxa taxaRegistrada = repository
                 .findByDescricaoAndAtivoTrue(dto.descricao())
-                .orElseGet( // se não existir, cria um novo
-                        () -> repository.save(dto.toEntity())
-                );
+                .orElseGet(() -> repository.save(dto.toEntity())); // TODO: Aplicar lógica de reativação de cliente
 
         return TaxaResponseDto.fromEntity(repository.save(taxaRegistrada));
     }

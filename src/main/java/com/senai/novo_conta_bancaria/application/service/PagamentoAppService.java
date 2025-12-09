@@ -6,18 +6,13 @@ import com.senai.novo_conta_bancaria.domain.entity.Conta;
 import com.senai.novo_conta_bancaria.domain.entity.Pagamento;
 import com.senai.novo_conta_bancaria.domain.entity.Taxa;
 import com.senai.novo_conta_bancaria.domain.enums.FormaPagamento;
-import com.senai.novo_conta_bancaria.domain.exception.FormaDePagamentoInvalidaException;
-import com.senai.novo_conta_bancaria.domain.exception.SaldoInsuficienteException;
 import com.senai.novo_conta_bancaria.domain.repository.PagamentoRepository;
-import com.senai.novo_conta_bancaria.domain.repository.TaxaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service

@@ -36,15 +36,19 @@ public class ClienteController {
                             schema = @Schema(implementation = ClienteRegistroDto.class),
                             examples = @ExampleObject(name = "Exemplo válido", value = """
                                         {
-                                            "nome": "José Silva dos Santos",
-                                            "cpf": 12345678910,
-                                            "email": "jose@email.com",
-                                            "senha": "JoseDosSantos1234",
-                                            "conta": {
-                                                "numero": 102030,
-                                                "tipo": "CORRENTE",
-                                                "saldo": 1000
-                                            }
+                                          "nome": "José Silva dos Santos",
+                                          "cpf": 12345678910,
+                                          "email": "jose@email.com",
+                                          "senha": "JoseDosSantos1234",
+                                          "conta": {
+                                            "numero": 102030,
+                                            "tipo": "CORRENTE",
+                                            "saldo": 1000
+                                          },
+                                          "dispositivoIoT": {
+                                            "codigoSerial": "AAAA-BBBB-CCCC-DDDD",
+                                            "chavePublica": "abcdefghijklmnopqrstuvwxyz"
+                                          }
                                         }
                                     """
                             )
@@ -63,7 +67,7 @@ public class ClienteController {
                                                     value = "\"O nome deve ter entre 3 e 100 caracteres.\""),
                                             @ExampleObject(
                                                     name = "CPF inválido",
-                                                    value = "\"O CPF deve ter até 11 digitos.\"")
+                                                    value = "\"O CPF deve ter até 11 dígitos.\"")
                                     }
                             )
                     )
@@ -149,7 +153,7 @@ public class ClienteController {
                                                     value = "\"O nome deve ter entre 3 e 100 caracteres.\""),
                                             @ExampleObject(
                                                     name = "CPF inválido",
-                                                    value = "\"O CPF deve ter até 11 digitos.\"")
+                                                    value = "\"O CPF deve ter até 11 dígitos.\"")
                                     }
                             )
                     ),

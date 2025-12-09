@@ -1,6 +1,6 @@
 package com.senai.novo_conta_bancaria.application.service;
 
-import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTRegistroDTO;
+import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTAtualizacaoDTO;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTResponseDTO;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
 import com.senai.novo_conta_bancaria.domain.entity.DispositivoIoT;
@@ -25,7 +25,7 @@ public class DispositivoIoTService {
     // READ
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
-    public List<DispositivoIoTResponseDTO> listarTodosOsDispositivoIoTs() {
+    public List<DispositivoIoTResponseDTO> listarTodosOsDispositivosIoT() {
         return repository
                 .findAllByAtivoTrue()
                 .stream()
@@ -40,7 +40,7 @@ public class DispositivoIoTService {
 
     // UPDATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
-    public DispositivoIoTResponseDTO atualizarDispositivoIoT(String codigoSerial, DispositivoIoTRegistroDTO dto) {
+    public DispositivoIoTResponseDTO atualizarDispositivoIoT(String codigoSerial, DispositivoIoTAtualizacaoDTO dto) {
         Cliente cliente = clienteService.procurarClienteAtivo(dto.clienteCPF());
         DispositivoIoT DispositivoIoT = procurarDispositivoIoTAtivo(codigoSerial);
 
@@ -51,7 +51,7 @@ public class DispositivoIoTService {
         return DispositivoIoTResponseDTO.fromEntity(repository.save(DispositivoIoT));
     }
 
-    // DELETE: permitido apenas com a deleção de cliente
+    // DELETE: permitido apenas com a remoção de cliente
 
     // Mét0do auxiliar para as requisições
     protected DispositivoIoT procurarDispositivoIoTAtivo(String codigoSerial) {

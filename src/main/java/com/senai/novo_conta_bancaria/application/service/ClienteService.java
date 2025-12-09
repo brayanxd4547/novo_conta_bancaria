@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,35 +25,19 @@ import java.util.List;
 public class ClienteService {
     private final ClienteRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final ContaService contaService;
 
     // CREATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ClienteResponseDto registrarCliente(ClienteRegistroDto dto) {
-        // Impede que mais de um cliente com mesmo email exista
-        if (repository.existsByEmailAndAtivoTrue(dto.email())) {
-            String mensagem = "Endereço de e-mail \"" + dto.email() + "\" já foi cadastrado.";
-            throw new EmailJaCadastradoException(mensagem);
-        }
+        validarEmail(dto.email());
 
-        Cliente clienteRegistrado = repository
-                .findByCpfAndAtivoTrue(dto.cpf()) // verifica se o cpf já está cadastrado
-                .orElseGet( // se não estiver, cria um novo cliente
-                        () -> repository.save(dto.toEntity())
-                );
-        Conta novaConta = dto.conta().toEntity(clienteRegistrado);
-        DispositivoIoT dispositivoIoT = dto.dispositivoIoT().toEntity(clienteRegistrado);
-
-        // Verifica se o cliente já tem uma conta do mesmo tipo
-        List<Conta> contas = clienteRegistrado.getContas();
-        boolean temMesmoTipo = contas
-                .stream()
-                .anyMatch(c -> c.getTipo().equals(novaConta.getTipo()) && c.isAtivo());
-        if (temMesmoTipo)
-            throw new ContaDeMesmoTipoException(novaConta.getTipo());
-
-        clienteRegistrado.getContas().add(novaConta);
-        clienteRegistrado.setDispositivoIoT(dispositivoIoT);
-        clienteRegistrado.setSenha(passwordEncoder.encode(dto.senha()));
+        Cliente clienteRegistrado = repository.findByCpf(dto.cpf())
+                .map(c -> c.isAtivo() ?
+                        inserirNovaConta(c, dto.conta().toEntity(c)) :
+                        reativarCliente(c, dto)
+                )
+                .orElseGet(() -> criarNovoCliente(dto));
 
         return ClienteResponseDto.fromEntity(repository.save(clienteRegistrado));
     }
@@ -102,5 +87,54 @@ public class ClienteService {
         return repository
                 .findByCpfAndAtivoTrue(cpf)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("cliente"));
+    }
+
+    private void validarEmail(String email) {
+        if (repository.existsByEmailAndAtivoTrue(email))
+            throw new EmailJaCadastradoException("Endereço de e-mail \"" + email + "\" já foi cadastrado.");
+    }
+
+    private Cliente inserirNovaConta(Cliente cliente, Conta conta) {
+        List<Conta> contas = cliente.getContas();
+        boolean temMesmoTipo = contas
+                .stream()
+                .anyMatch(c -> c.getTipo().equals(conta.getTipo()) && c.isAtivo());
+        if (temMesmoTipo)
+            throw new ContaDeMesmoTipoException(conta.getTipo());
+
+        cliente.getContas().add(conta);
+        return cliente;
+    }
+
+    private Cliente reativarCliente(Cliente cliente, ClienteRegistroDto dto) {
+        // Se encontrar conta de mesmo tipo, substitui. Se não, registra uma nova
+        Conta conta = cliente.getContas().stream()
+                .filter(c -> c.getTipo().equals(dto.conta().tipo()))
+                .findFirst()
+                .map(c -> contaService.substituirConta(c, dto.conta()))
+                .orElse(dto.conta().toEntity(cliente));
+        DispositivoIoT dispositivo = dto.dispositivoIoT().toEntity(cliente);
+
+        cliente.setAtivo(true);
+        cliente.setNome(dto.nome());
+        cliente.setEmail(dto.email());
+        cliente.setSenha(passwordEncoder.encode(dto.senha()));
+        cliente.setContas(new ArrayList<>(List.of(conta))); // Sobrescreve com uma nova lista de contas
+        cliente.setDispositivoIoT(dispositivo);
+        cliente.setCodigosAutenticacao(new ArrayList<>()); // Não incluído por enquanto
+
+        return cliente;
+    }
+
+    private Cliente criarNovoCliente(ClienteRegistroDto dto) {
+        Cliente cliente = dto.toEntity();
+        Conta conta = dto.conta().toEntity(cliente);
+        DispositivoIoT dispositivo = dto.dispositivoIoT().toEntity(cliente);
+
+        cliente.setContas(List.of(conta));
+        cliente.setDispositivoIoT(dispositivo);
+        cliente.setSenha(passwordEncoder.encode(dto.senha()));
+
+        return cliente;
     }
 }
