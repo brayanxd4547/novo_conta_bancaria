@@ -89,6 +89,12 @@ public class ClienteService {
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("cliente"));
     }
 
+    protected Cliente procurarClienteAtivoPorId(String id) {
+        return repository
+                .findByIdAndAtivoTrue(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("cliente"));
+    }
+
     private void validarEmail(String email) {
         if (repository.existsByEmailAndAtivoTrue(email))
             throw new EmailJaCadastradoException("Endereço de e-mail \"" + email + "\" já foi cadastrado.");

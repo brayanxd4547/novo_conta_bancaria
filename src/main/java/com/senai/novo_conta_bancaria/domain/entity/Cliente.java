@@ -13,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 public class Cliente extends Usuario {
+    @Column(nullable = false)
+    private Long biometria;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Conta> contas;
 

@@ -23,6 +23,7 @@ import java.util.List;
 @Transactional
 public class ContaService {
     private final ContaRepository repository;
+    private final DispositivoIoTService dispositivoIoTService;
 
     // CREATE: embutido em Cliente
 

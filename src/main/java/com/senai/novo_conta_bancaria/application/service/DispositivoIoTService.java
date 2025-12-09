@@ -1,5 +1,8 @@
 package com.senai.novo_conta_bancaria.application.service;
 
+import com.rafaelcosta.spring_mqttx.domain.annotation.MqttPayload;
+import com.rafaelcosta.spring_mqttx.domain.annotation.MqttPublisher;
+import com.rafaelcosta.spring_mqttx.domain.annotation.MqttSubscriber;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTAtualizacaoDTO;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTResponseDTO;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
@@ -8,8 +11,10 @@ import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaExcep
 import com.senai.novo_conta_bancaria.domain.repository.DispositivoIoTRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -58,5 +63,15 @@ public class DispositivoIoTService {
         return repository
                 .findByCodigoSerialAndAtivoTrue(codigoSerial)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("DispositivoIoT"));
+    }
+
+    @MqttSubscriber("banco/autenticacao/{idCliente}")
+    public void validarBiometria(@MqttPayload Long biometria, @PathVariable String idCliente) {
+        Cliente cliente = clienteService.procurarClienteAtivoPorId(idCliente);
+        if (biometria.equals(cliente.getCodigosAutenticacao())){
+
+        }
+
+        System.out.println("Mensagem recebida: " + biometria);
     }
 }

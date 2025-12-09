@@ -31,6 +31,10 @@ public record ClienteRegistroDto(
         @Size(min = 8, max = 100, message = "A senha deve ter entre 8 e 100 caracteres.")
         String senha,
 
+        @NotNull(message = "A biometria não pode ser nulo.")
+        @Positive(message = "A biometria não pode ser negativo.")
+        Long biometria,
+
         ContaResumoDto conta,
 
         DispositivoIoTRegistroDTO dispositivoIoT
@@ -42,6 +46,7 @@ public record ClienteRegistroDto(
                 .cpf(cpf)
                 .email(email)
                 .senha(senha)
+                .biometria(biometria)
                 .contas(new ArrayList<>())
                 .role(Role.CLIENTE)
                 .dispositivoIoT(null)

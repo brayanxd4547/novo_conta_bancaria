@@ -5,10 +5,7 @@ import com.senai.novo_conta_bancaria.domain.entity.Pagamento;
 import com.senai.novo_conta_bancaria.domain.entity.Taxa;
 import com.senai.novo_conta_bancaria.domain.enums.FormaPagamento;
 import com.senai.novo_conta_bancaria.domain.enums.StatusPagamento;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,7 +24,11 @@ public record PagamentoRegistroDto(
         @NotNull(message = "A forma de pagamento não pode ser nula.")
         @NotBlank(message = "A forma de pagamento não pode ser vazia.")
         @Size(min = 3, max = 100, message = "A forma de pagamento deve ter entre 3 e 100 caracteres.")
-        String formaPagamento
+        String formaPagamento,
+
+        @NotNull(message = "A biometria não pode ser nulo.")
+        @Positive(message = "A biometria não pode ser negativo.")
+        Long biometria
 ) {
         public Pagamento toEntity(Conta conta, Set<Taxa> taxas) {
                 return Pagamento.builder()
