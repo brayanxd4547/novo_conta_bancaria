@@ -40,6 +40,7 @@ public class ClienteController {
                                           "cpf": 12345678910,
                                           "email": "jose@email.com",
                                           "senha": "JoseDosSantos1234",
+                                          "biometria": "4ebvgf7y8349hj0rk32miuoj3wjdpo0",
                                           "conta": {
                                             "numero": 102030,
                                             "tipo": "CORRENTE",
@@ -135,7 +136,8 @@ public class ClienteController {
                                         "nome": "José Silva dos Santos",
                                         "cpf": 12345678910,
                                         "email": "jose@email.com",
-                                        "senha": "JoseDosSantos1234"
+                                        "senha": "JoseDosSantos1234",
+                                        "biometria": "4ebvgf7y8349hj0rk32miuoj3wjdpo0"
                                     }
                                     """)
                     )

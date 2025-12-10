@@ -14,7 +14,7 @@ import java.util.List;
 @SuperBuilder
 public class Cliente extends Usuario {
     @Column(nullable = false)
-    private Long biometria;
+    private String biometria;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Conta> contas;

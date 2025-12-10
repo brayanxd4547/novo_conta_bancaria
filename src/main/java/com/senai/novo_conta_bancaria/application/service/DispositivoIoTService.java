@@ -1,20 +1,19 @@
 package com.senai.novo_conta_bancaria.application.service;
 
 import com.rafaelcosta.spring_mqttx.domain.annotation.MqttPayload;
-import com.rafaelcosta.spring_mqttx.domain.annotation.MqttPublisher;
 import com.rafaelcosta.spring_mqttx.domain.annotation.MqttSubscriber;
+import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.AutenticacaoPayloadDTO;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTAtualizacaoDTO;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTResponseDTO;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
 import com.senai.novo_conta_bancaria.domain.entity.DispositivoIoT;
 import com.senai.novo_conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.novo_conta_bancaria.domain.repository.DispositivoIoTRepository;
+import com.senai.novo_conta_bancaria.infrastructure.mqtt.MqttPublisherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -23,7 +22,10 @@ import java.util.List;
 @Transactional
 public class DispositivoIoTService {
     private final DispositivoIoTRepository repository;
+
     private final ClienteService clienteService;
+
+    private final MqttPublisherService mqtt;
 
     // CREATE: embutido em Cliente
 
@@ -65,13 +67,11 @@ public class DispositivoIoTService {
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("DispositivoIoT"));
     }
 
-    @MqttSubscriber("banco/autenticacao/{idCliente}")
-    public void validarBiometria(@MqttPayload Long biometria, @PathVariable String idCliente) {
-        Cliente cliente = clienteService.procurarClienteAtivoPorId(idCliente);
-        if (biometria.equals(cliente.getCodigosAutenticacao())){
+    @MqttSubscriber("banco/autenticacao")
+    public void autenticarUsuario(@MqttPayload AutenticacaoPayloadDTO dto) {
+        Cliente cliente = clienteService.procurarClienteAtivoPorId(dto.idCliente());
+        boolean biometriaValidada = cliente.getBiometria().equals(dto.biometria());
 
-        }
-
-        System.out.println("Mensagem recebida: " + biometria);
+        mqtt.confirmarValidacao(dto.codigoAutenticacao(), biometriaValidada);
     }
 }

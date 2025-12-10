@@ -23,8 +23,9 @@ public record ClienteAtualizacaoDto(
         @Size(min = 8, max = 100, message = "A senha deve ter entre 8 e 100 caracteres.")
         String senha,
 
-        @NotNull(message = "A biometria não pode ser nulo.")
-        @Positive(message = "A biometria não pode ser negativo.")
+        @NotNull(message = "O código da biometria não pode ser nulo.")
+        @NotBlank(message = "O código da biometria não pode ser vazio.")
+        @Size(min = 8, max = 100, message = "O código da biometria deve ter entre 8 e 100 caracteres.")
         Long biometria
 ) {
 }

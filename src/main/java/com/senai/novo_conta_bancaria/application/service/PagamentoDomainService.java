@@ -54,7 +54,8 @@ public class PagamentoDomainService {
 
         BigDecimal valorTotal = valorPago.add(valorTaxa);
 
-        if(conta.getSaldo().compareTo(valorTotal) < 0) throw new SaldoInsuficienteException("pagamento");
+        if(conta.getSaldo().compareTo(valorTotal) < 0)
+            throw new SaldoInsuficienteException("pagamento");
 
         return valorTotal;
     }

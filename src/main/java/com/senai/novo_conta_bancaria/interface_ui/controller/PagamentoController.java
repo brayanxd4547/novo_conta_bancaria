@@ -1,5 +1,6 @@
 package com.senai.novo_conta_bancaria.interface_ui.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoRegistroDto;
 import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoResponseDto;
 import com.senai.novo_conta_bancaria.application.service.PagamentoAppService;
@@ -58,8 +59,8 @@ public class PagamentoController {
             }
     )
     @PostMapping("/{numeroConta}")
-    public ResponseEntity<PagamentoResponseDto> pagar(@PathVariable Long numeroConta, @Valid @RequestBody PagamentoRegistroDto dto) {
+    public ResponseEntity<PagamentoResponseDto> pagar(@PathVariable Long numeroConta, @Valid @RequestBody PagamentoRegistroDto dto) throws JsonProcessingException {
         return ResponseEntity
-                .ok(pagamentoAppService.pagar(numeroConta, dto));
+                .ok(pagamentoAppService.solicitarPagamento(numeroConta, dto));
     }
 }

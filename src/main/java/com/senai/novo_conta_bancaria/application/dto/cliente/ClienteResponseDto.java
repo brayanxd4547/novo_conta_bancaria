@@ -12,6 +12,7 @@ public record ClienteResponseDto(
         Long cpf,
         String email,
         String senha,
+        String biometria,
         List<ContaResumoDto> contas,
         DispositivoIoTResponseDTO dispositivoIoT
 ) {
@@ -27,6 +28,7 @@ public record ClienteResponseDto(
                 cliente.getCpf(),
                 cliente.getEmail(),
                 cliente.getSenha(),
+                cliente.getBiometria(),
                 contas,
                 DispositivoIoTResponseDTO.fromEntity(cliente.getDispositivoIoT())
         );

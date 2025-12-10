@@ -24,11 +24,7 @@ public record PagamentoRegistroDto(
         @NotNull(message = "A forma de pagamento não pode ser nula.")
         @NotBlank(message = "A forma de pagamento não pode ser vazia.")
         @Size(min = 3, max = 100, message = "A forma de pagamento deve ter entre 3 e 100 caracteres.")
-        String formaPagamento,
-
-        @NotNull(message = "A biometria não pode ser nulo.")
-        @Positive(message = "A biometria não pode ser negativo.")
-        Long biometria
+        String formaPagamento
 ) {
         public Pagamento toEntity(Conta conta, Set<Taxa> taxas) {
                 return Pagamento.builder()

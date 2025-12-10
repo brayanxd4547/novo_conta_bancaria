@@ -80,6 +80,26 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(BiometriaInvalidadaException.class)
+    public ProblemDetail handleBiometriaInvalidadaException(BiometriaInvalidadaException ex, HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "A biometria inserida é inválida.",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(CodigoDeAutenticacaoInvalidoException.class)
+    public ProblemDetail handleCodigoDeAutenticacaoInvalidoException(CodigoDeAutenticacaoInvalidoException ex, HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.BAD_REQUEST,
+                "O código de autenticação é inválido.",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
     @ExceptionHandler(ContaDeMesmoTipoException.class)
     public ProblemDetail handleContaDeMesmoTipo(ContaDeMesmoTipoException ex, HttpServletRequest request) {
         return ProblemDetailUtils.buildProblem(
@@ -136,6 +156,16 @@ public class GlobalExceptionHandler {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.BAD_REQUEST,
                 "Saldo insuficiente.",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(SolicitacaoInterrompidaException.class)
+    public ProblemDetail handleSolicitacaoInterrompidaException(SolicitacaoInterrompidaException ex, HttpServletRequest request) {
+        return ProblemDetailUtils.buildProblem(
+                HttpStatus.REQUEST_TIMEOUT,
+                "Aguardo de solicitação interrompido.",
                 ex.getMessage(),
                 request.getRequestURI()
         );
