@@ -5,11 +5,9 @@ import com.rafaelcosta.spring_mqttx.domain.annotation.MqttSubscriber;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.ValidacaoPayloadDTO;
 import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoRegistroDto;
 import com.senai.novo_conta_bancaria.application.dto.pagamento.PagamentoResponseDto;
-import com.senai.novo_conta_bancaria.domain.entity.Cliente;
-import com.senai.novo_conta_bancaria.domain.entity.Conta;
-import com.senai.novo_conta_bancaria.domain.entity.Pagamento;
-import com.senai.novo_conta_bancaria.domain.entity.Taxa;
+import com.senai.novo_conta_bancaria.domain.entity.*;
 import com.senai.novo_conta_bancaria.domain.enums.FormaPagamento;
+import com.senai.novo_conta_bancaria.domain.enums.StatusPagamento;
 import com.senai.novo_conta_bancaria.domain.exception.BiometriaInvalidadaException;
 import com.senai.novo_conta_bancaria.domain.exception.CodigoDeAutenticacaoInvalidoException;
 import com.senai.novo_conta_bancaria.domain.exception.SolicitacaoInterrompidaException;
@@ -29,7 +27,7 @@ import java.util.concurrent.CountDownLatch;
 @RequiredArgsConstructor
 @Transactional
 public class PagamentoAppService {
-    private final PagamentoRepository pagamentoRepository;
+    private final PagamentoRepository repository;
 
     private final TaxaService taxaService;
     private final ContaService contaService;
@@ -37,26 +35,30 @@ public class PagamentoAppService {
 
     private final MqttPublisherService mqtt;
 
-    public CountDownLatch esperaBiometria;
-    public CountDownLatch esperaValidacao;
-
-    public String biometria;
-    public String codigoAutenticacao;
-
     @Transactional
     @PreAuthorize("hasRole('CLIENTE')")
-    public PagamentoResponseDto solicitarPagamento(Long numero, PagamentoRegistroDto dto) {
-        esperaBiometria = new CountDownLatch(1);
-        esperaValidacao = new CountDownLatch(1);
+    public PagamentoResponseDto solicitarPagamento(Long numero, PagamentoRegistroDto dto){
+        String codigoAutenticacao = UUID.randomUUID().toString();
 
+        Conta conta = contaService.procurarContaAtiva(numero);
+
+        FormaPagamento formaPagamento = pagamentoDomainService.validarFormaPagamento(dto.formaPagamento());
+        Set<Taxa> taxas = taxaService.procurarTaxasPorFormaPagamento(formaPagamento);
+        BigDecimal valorTaxa = pagamentoDomainService.calcularTaxa(dto.valorPago(), taxas);
+
+        Pagamento pagamento = dto.toEntity(conta, taxas);
+
+        mqtt.solicitarBiometria();
+        return PagamentoResponseDto.fromEntity(repository.save(pagamento), valorTaxa);
+    }
+
+    /*@Transactional
+    @PreAuthorize("hasRole('CLIENTE')")
+    public PagamentoResponseDto ddd(Long numero, PagamentoRegistroDto dto) {
         // Espera o usuário realizar a biometria
         mqtt.solicitarBiometria();
-        try {
-            esperaBiometria.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new SolicitacaoInterrompidaException("biometria");
-        }
+
+        String biometria = salvarBiometria();
 
         Conta conta = contaService.procurarContaAtiva(numero);
         Cliente cliente = conta.getCliente();
@@ -71,33 +73,35 @@ public class PagamentoAppService {
             throw new SolicitacaoInterrompidaException("validação da biometria");
         }
 
-        FormaPagamento formaPagamento = pagamentoDomainService.validarFormaPagamento(dto.formaPagamento());
-        Set<Taxa> taxas = taxaService.procurarTaxasPorFormaPagamento(formaPagamento);
 
-        BigDecimal valorTaxa = pagamentoDomainService.calcularTaxa(dto.valorPago(), taxas);
-        BigDecimal valorTotal = pagamentoDomainService.validarSaldo(numero, dto.valorPago(), valorTaxa);
+
+
         conta.setSaldo(conta.getSaldo().subtract(valorTotal));
 
         Pagamento pagamento = dto.toEntity(conta, taxas);
         return PagamentoResponseDto.fromEntity(pagamentoRepository.save(pagamento), valorTaxa);
     }
+     */
 
-    @MqttSubscriber("banco/salvarBiometria")
-    public void salvarBiometria(@MqttPayload String biometria) {
-        this.biometria = biometria;
-        esperaBiometria.countDown();
+    @MqttSubscriber("banco/receberBiometria")
+    public String receberBiometria(@MqttPayload String tokenBiometria) {
+
+
+        Pagamento pagamento = repository.findBy()
+
+        mqtt.solicitarAutenticacao(codigoAutenticacao, .getId(), tokenBiometria);
+
+        return null;
     }
 
     @MqttSubscriber("banco/validacao")
     public void validarPagamento(@MqttPayload ValidacaoPayloadDTO dto) {
-        try{
-            if (!codigoAutenticacao.equals(dto.codigoAutenticacao()))
-                throw new CodigoDeAutenticacaoInvalidoException();
+        if (!codigoAutenticacao.equals(dto.codigoAutenticacao()))
+            throw new CodigoDeAutenticacaoInvalidoException();
 
-            if (!dto.validado())
-                throw new BiometriaInvalidadaException();
-        } finally {
-            esperaValidacao.countDown();
-        }
+        if (!dto.validado())
+            throw new BiometriaInvalidadaException();
+
+
     }
 }

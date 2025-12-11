@@ -25,8 +25,7 @@ public class GerenteService {
     // CREATE
     @PreAuthorize("hasRole('ADMIN')")
     public GerenteResponseDto registrarGerente(GerenteRegistroDto dto) {
-        if (repository.existsByEmailAndAtivoTrue(dto.email()))
-            throw new EmailJaCadastradoException("Endereço de e-mail \"" + dto.email() + "\" já foi cadastrado.");
+        validarEmail(dto.email());
 
         Gerente gerenteRegistrado = repository.findByCpf(dto.cpf())
                 .map(g -> g.isAtivo() ?
@@ -88,6 +87,11 @@ public class GerenteService {
         return repository
                 .findByCpfAndAtivoTrue(cpf)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("gerente"));
+    }
+
+    private void validarEmail(String email) {
+        if (repository.existsByEmailAndAtivoTrue(email))
+            throw new EmailJaCadastradoException("Endereço de e-mail \"" + email + "\" já foi cadastrado.");
     }
 
     private Gerente reativarGerente(Gerente gerente, GerenteRegistroDto dto) {

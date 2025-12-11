@@ -59,7 +59,49 @@ public class PagamentoController {
             }
     )
     @PostMapping("/{numeroConta}")
-    public ResponseEntity<PagamentoResponseDto> pagar(@PathVariable Long numeroConta, @Valid @RequestBody PagamentoRegistroDto dto) throws JsonProcessingException {
+    public ResponseEntity<PagamentoResponseDto> solicitarPagamento(@PathVariable Long numeroConta, @Valid @RequestBody PagamentoRegistroDto dto) throws JsonProcessingException {
+        return ResponseEntity
+                .ok(pagamentoAppService.solicitarPagamento(numeroConta, dto));
+    }
+
+    @Operation(
+            summary = "Realizar um pagamento",
+            description = "Retira um valor da conta para pagar um serviço por meio de uma forma de pagamento.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = PagamentoRegistroDto.class),
+                            examples = @ExampleObject(name = "Exemplo válido", value = """
+                                        {
+                                            "servico": "SENAI",
+                                            "valorPago": 100,
+                                            "formaPagamento": "BOLETO"
+                                        }
+                                    """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Pagamento realizado com sucesso."),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Erro de validação.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "Nome do serviço inválido",
+                                                    value = "\"O nome do serviço precisa ter entre 3 e 100 caracteres.\""),
+                                            @ExampleObject(
+                                                    name = "Forma de pagamento inválida",
+                                                    value = "\"A forma de pagamento não foi encontrada.\"")
+                                    }
+                            )
+                    )
+            }
+    )
+    @PostMapping("/{numeroConta}")
+    public ResponseEntity<PagamentoResponseDto> solicitarPagamento(@PathVariable Long numeroConta, @Valid @RequestBody PagamentoRegistroDto dto) throws JsonProcessingException {
         return ResponseEntity
                 .ok(pagamentoAppService.solicitarPagamento(numeroConta, dto));
     }
