@@ -1,5 +1,6 @@
 package com.senai.novo_conta_bancaria.application.dto.pagamento;
 
+import com.senai.novo_conta_bancaria.application.dto.conta.ContaResumoDto;
 import com.senai.novo_conta_bancaria.application.dto.taxa.TaxaResponseDto;
 import com.senai.novo_conta_bancaria.domain.entity.Pagamento;
 
@@ -10,6 +11,7 @@ import java.util.List;
 public record PagamentoResponseDto(
         String id,
         String servico,
+        ContaResumoDto conta,
         BigDecimal valorServico,
         BigDecimal valorTaxa,
         BigDecimal valorTotal,
@@ -27,6 +29,7 @@ public record PagamentoResponseDto(
                 return new PagamentoResponseDto(
                         pagamento.getId(),
                         pagamento.getServico(),
+                        ContaResumoDto.fromEntity(pagamento.getConta()),
                         pagamento.getValorPago(),
                         valorTaxa,
                         pagamento.getValorPago().add(valorTaxa),

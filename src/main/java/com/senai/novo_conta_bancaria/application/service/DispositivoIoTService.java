@@ -2,7 +2,7 @@ package com.senai.novo_conta_bancaria.application.service;
 
 import com.rafaelcosta.spring_mqttx.domain.annotation.MqttPayload;
 import com.rafaelcosta.spring_mqttx.domain.annotation.MqttSubscriber;
-import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.AutenticacaoPayloadDTO;
+import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.BiometriaPayloadDTO;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTAtualizacaoDTO;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.DispositivoIoTResponseDTO;
 import com.senai.novo_conta_bancaria.domain.entity.Cliente;
@@ -68,7 +68,7 @@ public class DispositivoIoTService {
     }
 
     @MqttSubscriber("banco/autenticacao")
-    public void autenticarUsuario(@MqttPayload AutenticacaoPayloadDTO dto) {
+    public void autenticarUsuario(@MqttPayload BiometriaPayloadDTO dto) {
         Cliente cliente = clienteService.procurarClienteAtivoPorId(dto.idCliente());
         boolean biometriaValidada = cliente.getBiometria().equals(dto.biometria());
 

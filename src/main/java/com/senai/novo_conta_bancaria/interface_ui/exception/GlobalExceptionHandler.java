@@ -161,11 +161,11 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(SolicitacaoInterrompidaException.class)
-    public ProblemDetail handleSolicitacaoInterrompidaException(SolicitacaoInterrompidaException ex, HttpServletRequest request) {
+    @ExceptionHandler(PagamentoNaoEncontradoException.class)
+    public ProblemDetail handlePagamentoNaoEncontradoException(PagamentoNaoEncontradoException ex, HttpServletRequest request) {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.REQUEST_TIMEOUT,
-                "Aguardo de solicitação interrompido.",
+                "Pagamento não encontrado.",
                 ex.getMessage(),
                 request.getRequestURI()
         );

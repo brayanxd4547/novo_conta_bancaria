@@ -1,7 +1,7 @@
 package com.senai.novo_conta_bancaria.infrastructure.mqtt;
 
 import com.rafaelcosta.spring_mqttx.domain.annotation.MqttPublisher;
-import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.AutenticacaoPayloadDTO;
+import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.BiometriaPayloadDTO;
 import com.senai.novo_conta_bancaria.application.dto.dispositivo_iot.ValidacaoPayloadDTO;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public class MqttPublisherService {
 
     @MqttPublisher("banco/autenticacao")
     public AutenticacaoPayloadDTO solicitarAutenticacao(String codigoAutenticacao, String idCliente, String biometria) {
-        return AutenticacaoPayloadDTO.toDto(codigoAutenticacao, idCliente, biometria);
+        return BiometriaPayloadDTO.toDto(codigoAutenticacao, biometria);
     }
 
     // Publicações para DispositivoIoTService
